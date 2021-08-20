@@ -5,18 +5,29 @@
  */
 package net.unibave.biblioteca.api.model;
 
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  *
  * @author Aula
  */
-public class Autor {
+@Entity
+@Table(name = "autores")
+public class Autor implements Serializable {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String nome;
     private String nacionalidade;
     private Genero genero;
 
-    public Autor() {
+    public Autor() { 
     }
 
     public Autor(Long id, String nome, String nacionalidade, Genero genero) {
