@@ -17,8 +17,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import net.unibave.biblioteca.api.model.Autor;
+import net.unibave.biblioteca.api.model.Erro;
 
 /**
  *
@@ -44,7 +47,22 @@ public class AutorResource {
     @GET
     @Path("{id}")
     public Autor findById(@PathParam("id") Long id) {
-        return entityManager.find(Autor.class, id);
+        Autor autor = entityManager.find(Autor.class, id);
+        if(autor == null) {
+            String mensagem = new StringBuilder()
+                    .append("Autor ")
+                    .append(String.valueOf(id))
+                    .append(" não encontrado")
+                    .toString();
+            
+            Response response = Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity(new Erro(mensagem))
+                    .build();
+            
+            throw new WebApplicationException(response);
+        }
+        return autor;
     }
 
     @DELETE
@@ -63,6 +81,7 @@ public class AutorResource {
     @PUT
     @Path("{id}")
     public Autor update(@PathParam("id") Long id, Autor autor) {
+        findById(id);
         autor.setId(id);
         return entityManager.merge(autor);
     }
