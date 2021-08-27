@@ -17,6 +17,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,10 +38,16 @@ public class AutorResource {
     private EntityManager entityManager;
 
     @GET
-    public List<Autor> findAll() {
+    public List<Autor> findAll(@QueryParam("nome") String nome) {
+        if(nome != null) {
+            return entityManager
+                .createQuery("SELECT a FROM Autor a WHERE LOWER(a.nome) LIKE LOWER(:nome)", Autor.class)
+                .setParameter("nome", new StringBuilder("%").append(nome).append("%").toString())
+                .getResultList(); 
+        }
+        
         return entityManager
                 .createQuery("SELECT a FROM Autor a", Autor.class)
-                //.createNativeQuery("SELECT * FROM autores", Autor.class);;
                 .getResultList();
     }
 
