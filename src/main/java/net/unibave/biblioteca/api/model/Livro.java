@@ -3,9 +3,11 @@ package net.unibave.biblioteca.api.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -23,6 +25,7 @@ public class Livro implements Serializable {
     private String subtitulo;
     
     @OneToOne(optional = false)
+    @JoinColumn(name = "id_autor", foreignKey = @ForeignKey(name="fk_livro_autor"))
     private Autor autor;
      
     public Livro() {
