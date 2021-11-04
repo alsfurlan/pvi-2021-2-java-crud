@@ -31,6 +31,13 @@ public class Livro implements Serializable {
     private String subtitulo;
     
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+         name = "livros_autores_relacao",
+         joinColumns = @JoinColumn(name = "id_livro"),
+         foreignKey = @ForeignKey(name = "fk_livro"),
+         inverseJoinColumns = @JoinColumn(name = "id_autor"),
+         inverseForeignKey = @ForeignKey(name = "fk_autor")
+    )
     private List<Autor> autores;
 
     public Livro() {
