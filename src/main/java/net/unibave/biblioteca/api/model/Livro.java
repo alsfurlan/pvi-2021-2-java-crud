@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,14 +30,7 @@ public class Livro implements Serializable {
     
     private String subtitulo;
     
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "livro_autor_relacao",
-        joinColumns = @JoinColumn(name = "id_livro"),
-        foreignKey = @ForeignKey(name = "fk_livro"),
-        inverseJoinColumns = @JoinColumn(name = "id_autor"),
-        inverseForeignKey = @ForeignKey(name = "fk_autor")
-    )
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Autor> autores;
 
     public Livro() {
