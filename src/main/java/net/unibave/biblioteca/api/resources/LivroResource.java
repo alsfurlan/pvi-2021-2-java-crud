@@ -7,6 +7,7 @@ package net.unibave.biblioteca.api.resources;
 
 import java.util.List;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -22,43 +23,53 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import net.unibave.biblioteca.api.model.Autor;
-import net.unibave.biblioteca.api.model.Erro;
 import net.unibave.biblioteca.api.model.Livro;
+import net.unibave.biblioteca.api.model.Erro;
 
 /**
  *
  * @author Aula
  */
 @Stateless
-@Path("autores")
+@Path("livros")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class AutorResource {
+public class LivroResource {
 
     @PersistenceContext(unitName = "BibliotecaPU")
     private EntityManager entityManager;
+    
+    private AutorResource autorResource;
 
+    public LivroResource() {
+    }
+
+    @Inject
+    public LivroResource(AutorResource autorResource) {
+       this.autorResource = autorResource;
+    }
+    
     @GET
-    public List<Autor> findAll(@QueryParam("nome") String nome) {
-        if(nome != null) {
+    public List<Livro> findAll(@QueryParam("titulo") String titulo) {
+        if(titulo != null) {
             return entityManager
-                .createQuery("SELECT a FROM Autor a WHERE LOWER(a.nome) LIKE LOWER(:nome)", Autor.class)
-                .setParameter("nome", new StringBuilder("%").append(nome).append("%").toString())
+                .createQuery("SELECT a FROM Livro a WHERE LOWER(a.titulo) LIKE LOWER(:titulo)", Livro.class)
+                .setParameter("titulo", new StringBuilder("%").append(titulo).append("%").toString())
                 .getResultList(); 
         }
         
         return entityManager
-                .createQuery("SELECT a FROM Autor a", Autor.class)
+                .createQuery("SELECT a FROM Livro a", Livro.class)
                 .getResultList();
     }
 
     @GET
     @Path("{id}")
-    public Autor findById(@PathParam("id") Long id) {
-        Autor autor = entityManager.find(Autor.class, id);
-        if(autor == null) {
+    public Livro findById(@PathParam("id") Long id) {
+        Livro livro = entityManager.find(Livro.class, id);
+        if(livro == null) {
             String mensagem = new StringBuilder()
-                    .append("Autor ")
+                    .append("Livro ")
                     .append(String.valueOf(id))
                     .append(" não encontrado")
                     .toString();
@@ -70,28 +81,30 @@ public class AutorResource {
             
             throw new WebApplicationException(response);
         }
-        return autor;
+        return livro;
     }
 
     @DELETE
     @Path("{id}")
     public void remove(@PathParam("id") Long id) {
-        Autor autor = findById(id);
-        entityManager.remove(autor);
+        Livro livro = findById(id);
+        entityManager.remove(livro);
     }
 
     @POST
-    public Autor add(Autor autor) {
-        entityManager.persist(autor);
-        return autor;
+    public Livro add(Livro livro) {
+        Long autorId = livro.getAutor().getId();
+        autorResource.findById(autorId);
+        entityManager.persist(livro);
+        return livro;
     }
 
     @PUT
     @Path("{id}")
-    public Autor update(@PathParam("id") Long id, Autor autor) {
+    public Livro update(@PathParam("id") Long id, Livro livro) {
         findById(id);
-        autor.setId(id);
-        return entityManager.merge(autor);
+        livro.setId(id);
+        return entityManager.merge(livro);
     }
-    
+
 }
