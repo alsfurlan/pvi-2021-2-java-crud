@@ -93,8 +93,6 @@ public class LivroResource {
 
     @POST
     public Livro add(Livro livro) {
-        Long autorId = livro.getAutor().getId();
-        autorResource.findById(autorId);
         entityManager.persist(livro);
         return livro;
     }

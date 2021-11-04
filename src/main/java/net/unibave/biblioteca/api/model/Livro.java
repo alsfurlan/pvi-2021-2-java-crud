@@ -1,13 +1,16 @@
 package net.unibave.biblioteca.api.model;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -24,12 +27,19 @@ public class Livro implements Serializable {
     
     private String subtitulo;
     
-    @OneToOne(optional = false)
-    @JoinColumn(name = "id_autor", foreignKey = @ForeignKey(name="fk_livro_autor"))
-    private Autor autor;
-     
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Autor> autores;
+
     public Livro() {
     } 
+    
+    public List<Autor> getAutores() {
+        return autores;
+    }
+
+    public void setAutores(List<Autor> autores) {
+        this.autores = autores;
+    }
 
     public Long getId() {
         return id;
@@ -55,11 +65,4 @@ public class Livro implements Serializable {
         this.subtitulo = subtitulo;
     }  
     
-    public Autor getAutor() {
-        return autor;
-    }
-
-    public void setAutor(Autor autor) {
-        this.autor = autor;
-    }
 }
